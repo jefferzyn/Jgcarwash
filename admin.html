@@ -386,9 +386,9 @@
             </label>
             <label>
               Branch
-              <input id="branch" value="gh-pages" autocomplete="off">
+              <input id="branch" value="main" autocomplete="off">
             </label>
-            <p class="muted">The token stays in this browser tab and is only used to update <strong>data/prices.json</strong>.</p>
+            <p class="muted">The token stays in this browser tab and is only used to update <strong>data/prices.json</strong>. Vercel should redeploy after the GitHub update if the project is connected to this repo.</p>
             <div class="status" id="status">Ready.</div>
           </div>
 
@@ -571,7 +571,7 @@
 
     async function publish() {
       const token = $("#token").value.trim();
-      const branch = $("#branch").value.trim() || "gh-pages";
+      const branch = $("#branch").value.trim() || "main";
       if (!token) {
         setStatus("Enter a GitHub token before publishing.", "err");
         return;
@@ -619,7 +619,7 @@
           throw new Error(message || "GitHub update failed.");
         }
 
-        setStatus("Published. The public page will update after GitHub Pages refreshes.", "ok");
+        setStatus("Published. Vercel should redeploy from GitHub shortly; the public page will update after that deployment finishes.", "ok");
       } catch (error) {
         setStatus(error.message || "Publish failed.", "err");
       } finally {
