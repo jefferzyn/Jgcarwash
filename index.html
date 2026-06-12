@@ -636,6 +636,148 @@
       box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28);
     }
 
+    .assistant-launch {
+      position: fixed;
+      right: 18px;
+      bottom: 74px;
+      z-index: 60;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      color: var(--white);
+      background: var(--navy);
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .assistant-panel {
+      position: fixed;
+      right: 18px;
+      bottom: 126px;
+      z-index: 70;
+      display: none;
+      width: min(390px, calc(100vw - 36px));
+      max-height: min(650px, calc(100vh - 150px));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: 0 26px 70px rgba(0, 0, 0, 0.32);
+      overflow: hidden;
+    }
+
+    .assistant-panel.open {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .assistant-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      color: var(--white);
+      background: var(--navy);
+    }
+
+    .assistant-head h2 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .assistant-head p {
+      margin: 0;
+      color: #cbd5df;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .assistant-close {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      color: var(--white);
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .assistant-messages {
+      display: grid;
+      align-content: start;
+      gap: 10px;
+      padding: 14px;
+      overflow: auto;
+      background: var(--soft);
+    }
+
+    .message {
+      max-width: 86%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      line-height: 1.42;
+      font-size: 14px;
+    }
+
+    .message.assistant {
+      justify-self: start;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+
+    .message.user {
+      justify-self: end;
+      color: var(--white);
+      background: #167f78;
+    }
+
+    .assistant-quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 14px 12px;
+      background: var(--soft);
+    }
+
+    .assistant-quick button {
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: var(--card);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .assistant-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      background: var(--card);
+    }
+
+    .assistant-form input {
+      width: 100%;
+      min-height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      font: inherit;
+    }
+
     .status {
       color: var(--muted);
       font-size: 14px;
@@ -717,6 +859,24 @@
         right: 18px;
         bottom: 12px;
         width: auto;
+      }
+
+      .assistant-launch {
+        left: 18px;
+        right: 18px;
+        bottom: 66px;
+        width: auto;
+      }
+
+      .assistant-panel {
+        left: 18px;
+        right: 18px;
+        bottom: 118px;
+        width: auto;
+      }
+
+      .assistant-form {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -841,6 +1001,30 @@
     <span><a href="admin.html">Admin</a></span>
   </footer>
 
+  <button class="assistant-launch" id="assistant-launch" type="button">Ask assistant</button>
+  <section class="assistant-panel" id="assistant-panel" aria-label="JG Service Assistant" aria-hidden="true">
+    <div class="assistant-head">
+      <div>
+        <h2>JG Service Assistant</h2>
+        <p>Role-based helper. Answers only from this site.</p>
+      </div>
+      <button class="assistant-close" id="assistant-close" type="button" aria-label="Close assistant">&times;</button>
+    </div>
+    <div class="assistant-messages" id="assistant-messages"></div>
+    <div>
+      <div class="assistant-quick">
+        <button type="button" data-question="What services do you offer?">Services</button>
+        <button type="button" data-question="How much is a basic wash?">Basic wash</button>
+        <button type="button" data-question="What packages do you have?">Packages</button>
+        <button type="button" data-question="How do I book?">Book</button>
+      </div>
+      <form class="assistant-form" id="assistant-form">
+        <input id="assistant-input" autocomplete="off" placeholder="Ask about prices or services">
+        <button class="button dark" type="submit">Send</button>
+      </form>
+    </div>
+  </section>
+
   <a class="button sticky-cta" href="https://www.instagram.com/jg_quality.carwash/" target="_blank" rel="noopener">Book by DM</a>
 
   <script>
@@ -849,6 +1033,7 @@
       note: "Prices are starting prices and may vary by vehicle size and condition.",
       categories: []
     };
+    let currentPriceData = fallbackPrices;
 
     const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
       "&": "&amp;",
@@ -883,6 +1068,7 @@
     }
 
     function renderPrices(data) {
+      currentPriceData = data || fallbackPrices;
       const categories = data.categories || [];
       document.getElementById("menu-title").textContent = data.headline || "Service menu and starting prices.";
       document.getElementById("menu-note").textContent = data.note || "Prices may vary by vehicle size and condition.";
@@ -901,7 +1087,129 @@
       } catch (error) {
         renderPrices(fallbackPrices);
       }
+      seedAssistant();
     }
+
+    const assistantPanel = document.getElementById("assistant-panel");
+    const assistantLaunch = document.getElementById("assistant-launch");
+    const assistantClose = document.getElementById("assistant-close");
+    const assistantMessages = document.getElementById("assistant-messages");
+    const assistantForm = document.getElementById("assistant-form");
+    const assistantInput = document.getElementById("assistant-input");
+
+    function allItems() {
+      return (currentPriceData.categories || []).flatMap((category) =>
+        (category.items || []).map((item) => ({ ...item, category: category.name }))
+      );
+    }
+
+    function addMessage(text, sender = "assistant") {
+      const node = document.createElement("div");
+      node.className = `message ${sender}`;
+      node.textContent = text;
+      assistantMessages.appendChild(node);
+      assistantMessages.scrollTop = assistantMessages.scrollHeight;
+    }
+
+    function openAssistant() {
+      assistantPanel.classList.add("open");
+      assistantPanel.setAttribute("aria-hidden", "false");
+      assistantInput.focus();
+    }
+
+    function closeAssistant() {
+      assistantPanel.classList.remove("open");
+      assistantPanel.setAttribute("aria-hidden", "true");
+    }
+
+    function listCategory(namePart) {
+      const category = (currentPriceData.categories || []).find((entry) =>
+        entry.name.toLowerCase().includes(namePart)
+      );
+      if (!category) return null;
+      return `${category.name}: ${(category.items || []).map((item) => `${item.name} ${item.price}`).join(", ")}.`;
+    }
+
+    function answerQuestion(question) {
+      const text = question.toLowerCase();
+      const items = allItems();
+      const matchedItem = items.find((item) => text.includes(item.name.toLowerCase()));
+      const keywordItem = items.find((item) => {
+        const words = item.name.toLowerCase().split(/\s+/).filter((word) => word.length > 3);
+        return words.some((word) => text.includes(word));
+      });
+
+      if (matchedItem || keywordItem) {
+        const item = matchedItem || keywordItem;
+        return `${item.name} is listed at ${item.price}. It is under ${item.category}. Final price can vary by vehicle size and condition.`;
+      }
+
+      if (text.includes("book") || text.includes("appointment") || text.includes("schedule") || text.includes("contact")) {
+        return "To book, send a DM on Instagram at @jg_quality.carwash with your vehicle type, photos if possible, and the service you want.";
+      }
+
+      if (text.includes("package") || text.includes("bronze") || text.includes("silver") || text.includes("gold") || text.includes("platinum")) {
+        return listCategory("package") || "Packages are listed in the service menu. DM Instagram for the best package recommendation.";
+      }
+
+      if (text.includes("interior") || text.includes("inside")) {
+        return listCategory("interior") || "Interior services are listed in the menu. DM Instagram for a quote.";
+      }
+
+      if (text.includes("exterior") || text.includes("wash") || text.includes("wax")) {
+        return listCategory("exterior") || "Exterior services are listed in the menu. DM Instagram for a quote.";
+      }
+
+      if (text.includes("add") || text.includes("engine") || text.includes("headlight") || text.includes("ceramic") || text.includes("trim")) {
+        return listCategory("add") || "Add-ons are listed in the menu. DM Instagram for a quote.";
+      }
+
+      if (text.includes("price") || text.includes("cost") || text.includes("how much")) {
+        const first = items[0];
+        return first
+          ? `Prices start at ${first.price}. Ask me about a specific service, or DM @jg_quality.carwash for a quote based on your vehicle.`
+          : "Prices are being updated. Please DM @jg_quality.carwash for a quote.";
+      }
+
+      if (text.includes("service") || text.includes("offer") || text.includes("menu")) {
+        const categories = (currentPriceData.categories || []).map((category) => category.name).join(", ");
+        return categories
+          ? `The listed service categories are: ${categories}. Ask about a category or specific service for pricing.`
+          : "The service menu is being updated. Please DM @jg_quality.carwash for current services.";
+      }
+
+      if (text.includes("hour") || text.includes("location") || text.includes("address") || text.includes("phone")) {
+        return "I do not have hours, location, address, or phone number listed on this site. Please DM @jg_quality.carwash on Instagram for that info.";
+      }
+
+      return "I only know the services and prices shown on this site. Ask about a service price, package, add-on, or how to book by Instagram DM.";
+    }
+
+    function askAssistant(question) {
+      const cleaned = question.trim();
+      if (!cleaned) return;
+      addMessage(cleaned, "user");
+      addMessage(answerQuestion(cleaned), "assistant");
+    }
+
+    function seedAssistant() {
+      if (assistantMessages.children.length) return;
+      addMessage("Hi, I am JG Service Assistant. I can help with listed prices, packages, add-ons, and booking by Instagram DM.");
+    }
+
+    assistantLaunch.addEventListener("click", openAssistant);
+    assistantClose.addEventListener("click", closeAssistant);
+    assistantForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      askAssistant(assistantInput.value);
+      assistantInput.value = "";
+    });
+    document.querySelectorAll("[data-question]").forEach((button) => {
+      button.addEventListener("click", () => {
+        openAssistant();
+        askAssistant(button.dataset.question || "");
+      });
+    });
 
     loadPrices();
   </script>
