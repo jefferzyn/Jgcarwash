@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JG Quality Carwash Admin</title>
+  <meta name="robots" content="noindex">
+  <style>
+    :root {
+      --ink: #10161d;
+      --muted: #5f6b78;
+      --soft: #f4f7fa;
+      --card: #ffffff;
+      --line: #dce4eb;
+      --navy: #111820;
+      --gold: #c99a3e;
+      --teal: #33b8ae;
+      --danger: #b42318;
+      --shadow: 0 20px 48px rgba(17, 24, 32, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--soft);
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px clamp(18px, 5vw, 64px);
+      color: #f9fbfd;
+      background: rgba(17, 24, 32, 0.92);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      aspect-ratio: 1;
+      border: 1px solid rgba(201, 154, 62, 0.64);
+      border-radius: 8px;
+      color: var(--gold);
+      background: rgba(201, 154, 62, 0.1);
+    }
+
+    main {
+      padding: clamp(26px, 5vw, 56px) clamp(18px, 5vw, 64px) 70px;
+    }
+
+    .shell {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: #f9fbfd;
+      background: var(--navy);
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      color: var(--ink);
+      background: #ffffff;
+      border-color: var(--line);
+    }
+
+    .button.danger {
+      background: var(--danger);
+    }
+
+    .button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .card-pad {
+      padding: 20px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: #344250;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: #ffffff;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .category {
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .category-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .category-head h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .category-body {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      gap: 12px;
+    }
+
+    .item-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 140px auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .checkline input {
+      width: 18px;
+      min-height: 18px;
+    }
+
+    .side {
+      position: sticky;
+      top: 86px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .status {
+      min-height: 46px;
+      padding: 12px;
+      border-radius: 8px;
+      color: #344250;
+      background: #eef4f7;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .status.ok {
+      color: #0d6760;
+      background: rgba(51, 184, 174, 0.12);
+    }
+
+    .status.err {
+      color: var(--danger);
+      background: #fff1f0;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .token-row {
+      display: grid;
+      gap: 10px;
+    }
+
+    .preview {
+      display: grid;
+      gap: 10px;
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .preview-group {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .preview-group h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    .preview-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .preview-row strong {
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .page-head,
+      .grid {
+        grid-template-columns: 1fr;
+        display: grid;
+      }
+
+      .side {
+        position: static;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .two-col,
+      .item-row {
+        grid-template-columns: 1fr;
+      }
+
+      .brand span:last-child {
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">JG</span>
+      <span>JG Quality Admin</span>
+    </a>
+    <a class="button secondary" href="index.html">View site</a>
+  </header>
+
+  <main>
+    <div class="shell">
+      <div class="page-head">
+        <div>
+          <h1>Price admin</h1>
+          <p>Edit the menu, preview the result, then publish to the live site.</p>
+        </div>
+        <div class="toolbar">
+          <button class="button secondary" id="add-category" type="button">Add category</button>
+          <button class="button" id="publish" type="button">Publish prices</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section>
+          <div class="card card-pad form-grid">
+            <label>
+              Menu title
+              <input id="headline" autocomplete="off">
+            </label>
+            <label>
+              Price note
+              <textarea id="note"></textarea>
+            </label>
+          </div>
+          <div id="categories"></div>
+        </section>
+
+        <aside class="side">
+          <div class="card card-pad token-row">
+            <label>
+              GitHub token
+              <input id="token" type="password" autocomplete="off" placeholder="Token with contents write access">
+            </label>
+            <label>
+              Branch
+              <input id="branch" value="gh-pages" autocomplete="off">
+            </label>
+            <p class="muted">The token stays in this browser tab and is only used to update <strong>data/prices.json</strong>.</p>
+            <div class="status" id="status">Ready.</div>
+          </div>
+
+          <div class="card card-pad">
+            <h2 style="margin-top:0">Preview</h2>
+            <div class="preview" id="preview"></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const owner = "jefferzyn";
+    const repo = "Jgcarwash";
+    const path = "data/prices.json";
+    const apiBase = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    const state = { data: null, sha: null };
+
+    const fallback = {
+      updated: new Date().toISOString().slice(0, 10),
+      headline: "Car detailing menu",
+      note: "Prices are starting prices and may vary by vehicle size and condition.",
+      categories: []
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const statusEl = $("#status");
+
+    function setStatus(message, type = "") {
+      statusEl.className = `status ${type}`;
+      statusEl.textContent = message;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function normalizeData(data) {
+      return {
+        updated: new Date().toISOString().slice(0, 10),
+        headline: data.headline || fallback.headline,
+        note: data.note || fallback.note,
+        categories: (data.categories || []).map((category) => ({
+          name: category.name || "New Category",
+          summary: category.summary || "",
+          featured: Boolean(category.featured),
+          items: (category.items || []).map((item) => ({
+            name: item.name || "New Service",
+            price: item.price || "$0"
+          }))
+        }))
+      };
+    }
+
+    function collectData() {
+      const data = {
+        updated: new Date().toISOString().slice(0, 10),
+        headline: $("#headline").value.trim(),
+        note: $("#note").value.trim(),
+        categories: []
+      };
+
+      document.querySelectorAll(".category").forEach((categoryEl) => {
+        const category = {
+          name: categoryEl.querySelector("[data-field='category-name']").value.trim(),
+          summary: categoryEl.querySelector("[data-field='category-summary']").value.trim(),
+          featured: categoryEl.querySelector("[data-field='category-featured']").checked,
+          items: []
+        };
+
+        categoryEl.querySelectorAll(".item-row").forEach((row) => {
+          const name = row.querySelector("[data-field='item-name']").value.trim();
+          const price = row.querySelector("[data-field='item-price']").value.trim();
+          if (name || price) category.items.push({ name, price });
+        });
+
+        if (category.name || category.items.length) data.categories.push(category);
+      });
+
+      return normalizeData(data);
+    }
+
+    function itemTemplate(item = { name: "", price: "" }) {
+      return `
+        <div class="item-row">
+          <label>Service <input data-field="item-name" value="${escapeHtml(item.name)}"></label>
+          <label>Price <input data-field="item-price" value="${escapeHtml(item.price)}"></label>
+          <button class="button danger remove-item" type="button">Remove</button>
+        </div>`;
+    }
+
+    function categoryTemplate(category, index) {
+      const items = (category.items || []).map(itemTemplate).join("");
+      return `
+        <article class="card category" data-index="${index}">
+          <div class="category-head">
+            <h2>${escapeHtml(category.name || `Category ${index + 1}`)}</h2>
+            <button class="button danger remove-category" type="button">Remove</button>
+          </div>
+          <div class="category-body">
+            <div class="two-col">
+              <label>Category name <input data-field="category-name" value="${escapeHtml(category.name)}"></label>
+              <label class="checkline"><input data-field="category-featured" type="checkbox" ${category.featured ? "checked" : ""}> Featured</label>
+            </div>
+            <label>Summary <textarea data-field="category-summary">${escapeHtml(category.summary)}</textarea></label>
+            <div class="items">${items}</div>
+            <button class="button secondary add-item" type="button">Add service</button>
+          </div>
+        </article>`;
+    }
+
+    function renderEditor(data) {
+      state.data = normalizeData(data);
+      $("#headline").value = state.data.headline;
+      $("#note").value = state.data.note;
+      $("#categories").innerHTML = state.data.categories.map(categoryTemplate).join("");
+      bindEditor();
+      renderPreview();
+    }
+
+    function renderPreview() {
+      const data = collectData();
+      $("#preview").innerHTML = data.categories.map((category) => `
+        <div class="preview-group">
+          <h3>${escapeHtml(category.name)}</h3>
+          ${(category.items || []).map((item) => `
+            <div class="preview-row"><span>${escapeHtml(item.name)}</span><strong>${escapeHtml(item.price)}</strong></div>
+          `).join("")}
+        </div>
+      `).join("") || '<p class="muted">No prices yet.</p>';
+    }
+
+    function bindEditor() {
+      document.querySelectorAll("input, textarea").forEach((input) => {
+        input.addEventListener("input", renderPreview);
+      });
+
+      document.querySelectorAll(".remove-category").forEach((button) => {
+        button.addEventListener("click", () => {
+          button.closest(".category").remove();
+          renderPreview();
+        });
+      });
+
+      document.querySelectorAll(".add-item").forEach((button) => {
+        button.addEventListener("click", () => {
+          const items = button.closest(".category").querySelector(".items");
+          items.insertAdjacentHTML("beforeend", itemTemplate({ name: "", price: "$" }));
+          bindEditor();
+          renderPreview();
+        });
+      });
+
+      document.querySelectorAll(".remove-item").forEach((button) => {
+        button.addEventListener("click", () => {
+          button.closest(".item-row").remove();
+          renderPreview();
+        });
+      });
+    }
+
+    async function loadData() {
+      try {
+        const response = await fetch(`${path}?v=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) throw new Error("Could not load price data");
+        renderEditor(await response.json());
+        setStatus("Loaded current prices.", "ok");
+      } catch (error) {
+        renderEditor(fallback);
+        setStatus("Started with a blank fallback menu.", "err");
+      }
+    }
+
+    async function publish() {
+      const token = $("#token").value.trim();
+      const branch = $("#branch").value.trim() || "gh-pages";
+      if (!token) {
+        setStatus("Enter a GitHub token before publishing.", "err");
+        return;
+      }
+
+      const button = $("#publish");
+      button.disabled = true;
+      setStatus("Publishing...");
+
+      try {
+        const current = await fetch(`${apiBase}?ref=${encodeURIComponent(branch)}`, {
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`,
+            "X-GitHub-Api-Version": "2022-11-28"
+          }
+        });
+
+        if (!current.ok) {
+          const message = await current.text();
+          throw new Error(message || "Could not read current GitHub file.");
+        }
+
+        const currentJson = await current.json();
+        const nextData = collectData();
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(nextData, null, 2) + "\n")));
+        const update = await fetch(apiBase, {
+          method: "PUT",
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "X-GitHub-Api-Version": "2022-11-28"
+          },
+          body: JSON.stringify({
+            message: "Update car wash pricing",
+            content,
+            sha: currentJson.sha,
+            branch
+          })
+        });
+
+        if (!update.ok) {
+          const message = await update.text();
+          throw new Error(message || "GitHub update failed.");
+        }
+
+        setStatus("Published. The public page will update after GitHub Pages refreshes.", "ok");
+      } catch (error) {
+        setStatus(error.message || "Publish failed.", "err");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    $("#add-category").addEventListener("click", () => {
+      const index = document.querySelectorAll(".category").length;
+      $("#categories").insertAdjacentHTML("beforeend", categoryTemplate({
+        name: "New Category",
+        summary: "",
+        featured: false,
+        items: [{ name: "New Service", price: "$" }]
+      }, index));
+      bindEditor();
+      renderPreview();
+    });
+
+    $("#publish").addEventListener("click", publish);
+    loadData();
+  </script>
+</body>
+</html>

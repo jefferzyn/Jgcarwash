@@ -1,0 +1,47 @@
+{
+  "updated": "2026-06-12",
+  "headline": "Car detailing menu",
+  "note": "Prices are starting prices and may vary by vehicle size and condition.",
+  "categories": [
+    {
+      "name": "Exterior Services",
+      "summary": "Clean exterior services for road film, wheels, glass, and paint shine.",
+      "items": [
+        { "name": "Basic Wash", "price": "$40+" },
+        { "name": "Wash & Wax", "price": "$60+" }
+      ]
+    },
+    {
+      "name": "Interior Services",
+      "summary": "Interior reset options for seats, mats, panels, touchpoints, and odors.",
+      "items": [
+        { "name": "Basic Interior Clean", "price": "$40+" },
+        { "name": "Deep Interior Detail", "price": "$120+" },
+        { "name": "Leather Care", "price": "$40+" },
+        { "name": "Pet Hair Removal", "price": "$25+" },
+        { "name": "Odor/Ozone Treatment", "price": "$50+" }
+      ]
+    },
+    {
+      "name": "Full Packages",
+      "summary": "Bundled detail packages for a more complete inside-and-out finish.",
+      "featured": true,
+      "items": [
+        { "name": "Bronze Package", "price": "$80+" },
+        { "name": "Silver Package", "price": "$150+" },
+        { "name": "Gold Package", "price": "$250+" },
+        { "name": "Platinum Detail", "price": "$450+" }
+      ]
+    },
+    {
+      "name": "Add-Ons",
+      "summary": "Specialty upgrades for problem areas and longer-lasting finish protection.",
+      "items": [
+        { "name": "Engine Bay Clean", "price": "$40" },
+        { "name": "Headlight Restore", "price": "$50" },
+        { "name": "Ceramic Coating", "price": "$300+" },
+        { "name": "Trim Restore", "price": "$40+" }
+      ]
+    }
+  ]
+}
