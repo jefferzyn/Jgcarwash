@@ -642,12 +642,12 @@
       bottom: 74px;
       z-index: 60;
       min-height: 42px;
-      padding: 0 16px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 0 15px;
+      border: 1px solid rgba(16, 22, 29, 0.16);
       border-radius: 8px;
-      color: var(--white);
-      background: var(--navy);
-      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
+      color: var(--ink);
+      background: var(--card);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
       font: inherit;
       font-weight: 900;
       cursor: pointer;
@@ -660,7 +660,7 @@
       z-index: 70;
       display: none;
       width: min(390px, calc(100vw - 36px));
-      max-height: min(650px, calc(100vh - 150px));
+      max-height: min(620px, calc(100vh - 150px));
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--card);
@@ -677,7 +677,7 @@
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      padding: 16px;
+      padding: 15px 16px;
       color: var(--white);
       background: var(--navy);
     }
@@ -712,6 +712,7 @@
       display: grid;
       align-content: start;
       gap: 10px;
+      min-height: 230px;
       padding: 14px;
       overflow: auto;
       background: var(--soft);
@@ -723,6 +724,7 @@
       border-radius: 8px;
       line-height: 1.42;
       font-size: 14px;
+      white-space: pre-line;
     }
 
     .message.assistant {
@@ -759,6 +761,17 @@
       cursor: pointer;
     }
 
+    .assistant-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px 0;
+      color: var(--muted);
+      background: var(--card);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
     .assistant-form {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -776,6 +789,11 @@
       border-radius: 8px;
       color: var(--ink);
       font: inherit;
+    }
+
+    .assistant-form input:disabled {
+      color: var(--muted);
+      background: #eef4f7;
     }
 
     .status {
@@ -873,6 +891,7 @@
         right: 18px;
         bottom: 118px;
         width: auto;
+        max-height: calc(100vh - 136px);
       }
 
       .assistant-form {
@@ -1018,8 +1037,12 @@
         <button type="button" data-question="What packages do you have?">Packages</button>
         <button type="button" data-question="How do I book?">Book</button>
       </div>
+      <div class="assistant-meta">
+        <span id="assistant-limit">8 questions left</span>
+        <span>160 characters max</span>
+      </div>
       <form class="assistant-form" id="assistant-form">
-        <input id="assistant-input" autocomplete="off" placeholder="Ask about prices or services">
+        <input id="assistant-input" autocomplete="off" maxlength="160" placeholder="Ask about prices or services">
         <button class="button dark" type="submit">Send</button>
       </form>
     </div>
@@ -1034,6 +1057,8 @@
       categories: []
     };
     let currentPriceData = fallbackPrices;
+    const assistantLimitTotal = 8;
+    let assistantQuestionsUsed = 0;
 
     const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
       "&": "&amp;",
@@ -1096,6 +1121,7 @@
     const assistantMessages = document.getElementById("assistant-messages");
     const assistantForm = document.getElementById("assistant-form");
     const assistantInput = document.getElementById("assistant-input");
+    const assistantLimit = document.getElementById("assistant-limit");
 
     function allItems() {
       return (currentPriceData.categories || []).flatMap((category) =>
@@ -1185,16 +1211,36 @@
       return "I only know the services and prices shown on this site. Ask about a service price, package, add-on, or how to book by Instagram DM.";
     }
 
+    function updateAssistantLimit() {
+      const remaining = Math.max(assistantLimitTotal - assistantQuestionsUsed, 0);
+      assistantLimit.textContent = `${remaining} question${remaining === 1 ? "" : "s"} left`;
+      const isLimited = remaining <= 0;
+      assistantInput.disabled = isLimited;
+      assistantInput.placeholder = isLimited ? "Question limit reached" : "Ask about prices or services";
+      assistantForm.querySelector("button").disabled = isLimited;
+      document.querySelectorAll("[data-question]").forEach((button) => {
+        button.disabled = isLimited;
+      });
+    }
+
     function askAssistant(question) {
-      const cleaned = question.trim();
+      const cleaned = question.trim().slice(0, 160);
       if (!cleaned) return;
+      if (assistantQuestionsUsed >= assistantLimitTotal) {
+        addMessage("Question limit reached for this visit. Please DM @jg_quality.carwash on Instagram for more help.", "assistant");
+        updateAssistantLimit();
+        return;
+      }
+      assistantQuestionsUsed += 1;
       addMessage(cleaned, "user");
       addMessage(answerQuestion(cleaned), "assistant");
+      updateAssistantLimit();
     }
 
     function seedAssistant() {
       if (assistantMessages.children.length) return;
-      addMessage("Hi, I am JG Service Assistant. I can help with listed prices, packages, add-ons, and booking by Instagram DM.");
+      addMessage("Hi, I am JG Service Assistant. I can help with listed prices, packages, add-ons, and booking by Instagram DM. I do not make up info that is not on this site.");
+      updateAssistantLimit();
     }
 
     assistantLaunch.addEventListener("click", openAssistant);
@@ -1210,6 +1256,12 @@
         askAssistant(button.dataset.question || "");
       });
     });
+
+    window.jgServiceAssistant = {
+      ask: askAssistant,
+      open: openAssistant,
+      close: closeAssistant
+    };
 
     loadPrices();
   </script>
